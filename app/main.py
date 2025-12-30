@@ -6,35 +6,30 @@ import data_interactor as data_i
 app = FastAPI()
 
 
-def get_cursor():
-    pass
-
-
 @app.get('/')
 def home():
-    if isinstance(cursor, Exception):
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail={'message' : f'failed to connect to database., {cursor}'}
-            )
-    
-    return {'message' : 'Hello From inside the container!!'}
+    return {'message' : 'Hello From MongoDB Center!'}
 
 
 
 
-@app.get('/contacts', response_model=list[data_i.Contact])
+@app.get('/contacts')
 def get_all_contacts():
-    cursor, connector = get_cursor()
-    contacts = data_i.get_all_contacts()
-    return {'All contacts' : contacts}
+    try:
+        contacts = data_i.get_all_contacts()
+        if contacts:
+            return {'All contacts' : str(contacts)}
+        return {'message' : 'No contacts found'}
 
+    except:
+        pass
+    
 
 
 
 @app.post('/contacts', response_model=data_i.Contact)
 def create_contact(contact : data_i.Contact):
-    new_id = data_i.create_new_contact(contact)
+    new_id = data_i.create_new_contact(contact.to_dict())
 
     if isinstance(new_id, Exception):
         raise HTTPException(status_code=404, detail=new_id)

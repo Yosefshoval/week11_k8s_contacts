@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 
 
-load_dotenv('app/.env')
+load_dotenv()
 
 MONGO_HOST = os.getenv('MONGO_HOST')
 MONGO_PORT = int(os.getenv('MONGO_PORT'))

@@ -1,15 +1,6 @@
+from db_connection import get_collection
 from pydantic import BaseModel, Field
 from typing import Optional
-from dotenv import load_dotenv
-import os
-
-
-load_dotenv()
-
-MONGO_HOST = os.getenv('MONGO_HOST')
-MONGO_PORT = os.getenv('MONGO_PORT')
-MONGO_DB = os.getenv('MONGO_DB')
-
 
 
 class Contact(BaseModel):
@@ -23,19 +14,20 @@ class Contact(BaseModel):
         return {'id': self.id, 'first name:' : self.first_name, 'last name': self.last_name, 'phonr number:' : self.phone_number}
 
 
-
-
-
-
-
-
-
 def create_contact(contact_data: dict):
     pass
 
 
 def get_all_contacts():
-    pass
+    collection = get_collection()
+    try:
+        documents = collection.find()
+        documents_list = str([doc for doc in documents])
+        return documents_list
+    
+    except Exception as e:
+        return e
+
 
 def update_contact(id : str, contact_data : dict):
     pass

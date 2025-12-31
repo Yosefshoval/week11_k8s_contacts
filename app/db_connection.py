@@ -19,6 +19,11 @@ mongodb = MongoDB()
 
 
 def get_collection():
-    database = mongodb.client[MONGO_DB]
-    collection = database['contacts']
-    return collection
+    try:
+        database = mongodb.client[MONGO_DB]
+        collection = database['contacts']
+        return collection
+    except Exception as e:
+        return e
+
+

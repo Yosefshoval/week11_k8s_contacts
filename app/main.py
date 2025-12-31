@@ -17,6 +17,9 @@ def get_all_contacts():
         contacts = CrudContact.get_all_contacts()
         if contacts is None:
             return {'message' : 'no contacts found'}
+
+        if isinstance(contacts, Exception):
+            raise HTTPException(status_code=404, detail=str(contacts))
         
         return {'All contacts' : str(contacts)}
 
@@ -29,10 +32,12 @@ def get_all_contacts():
 def create_contact(contact : Contact):
     try:
         new_id = CrudContact.create_new_contact(contact.model_dump())
+    
         if isinstance(new_id, Exception):
-            # return {'error message' : str(new_id)}
-            raise HTTPException(status_code=404, detail=new_id)
+            raise HTTPException(status_code=404, detail=str(new_id))
+        
         return {'message' : 'contact created successfully', 'id' : str(new_id)}
+    
     except HTTPException as e:
         return {'message' : str(e)}
 
@@ -41,15 +46,16 @@ def create_contact(contact : Contact):
 
 @app.put('/contacts/{c_id}', status_code=status.HTTP_200_OK)
 def update_contact(c_id, contact : Contact):
-    is_updated = CrudContact.update_contact(c_id, contact.model_dump())
+    try:    
+        is_updated = CrudContact.update_contact(c_id, contact.model_dump())
 
-    try:
         if isinstance(is_updated, Exception):
-            raise HTTPException(status_code=404, detail=is_updated)
+            raise HTTPException(status_code=404, detail=str(is_updated))
+        
+        return {'message' : is_updated}
     except HTTPException as e:
         return {'message' : e}
-    
-    return {'message' : is_updated}
+
 
 
 
@@ -57,15 +63,16 @@ def update_contact(c_id, contact : Contact):
 @app.delete('/contacts/{id}', status_code=status.HTTP_200_OK)
 def delete_contact(c_id):
 
-    is_deleted = CrudContact.delete_contact(c_id)
-
     try:
-        if isinstance(is_deleted, Exception):
-            raise HTTPException(status_code=500, detail=is_deleted)
+        is_deleted = CrudContact.delete_contact(c_id)
+
+        if isinstance(is_deleted, Exception) or 'message' not in is_deleted:
+            raise HTTPException(status_code=404, detail=str(is_deleted))
+    
+        return {'message' : is_deleted}
+    
     except HTTPException as e:
         return {'message' : e}
-
-    return {'message' : is_deleted}
 
 
 if __name__ == "__main__":

@@ -96,8 +96,9 @@ class CrudContact:
         try:
             if CrudContact.search_contact_by_id(id):
                 collection.delete_one({'_id' : ObjectId(id)})
-                return ({'message' : 'contact deleted successfully'})
+                return {'message' : 'contact deleted successfully'}
             
-            return ({'message' : 'contact not found'})
+            return f'contact with id {id} not found'
+        
         except Exception as e:
             return e

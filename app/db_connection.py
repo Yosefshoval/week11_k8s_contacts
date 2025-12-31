@@ -15,15 +15,10 @@ class MongoDB:
         self.client = MongoClient(host=MONGO_HOST, port=MONGO_PORT)
 
 
-mongodb = MongoDB()
-
-
-def get_collection():
-    try:
-        database = mongodb.client[MONGO_DB]
-        collection = database['contacts']
-        return collection
-    except Exception as e:
-        return e
-
-
+    def get_collection(self):
+        try:
+            database = self.client[MONGO_DB]
+            collection = database['contacts']
+            return collection
+        except Exception as e:
+            return e

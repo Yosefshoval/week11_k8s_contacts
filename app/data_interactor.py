@@ -1,4 +1,4 @@
-from db_connection import get_collection
+from db_connection import MongoDB
 from pydantic import BaseModel, Field
 from bson import ObjectId
 
@@ -14,14 +14,16 @@ class Contact(BaseModel):
         return {'id': self.id, 'first_name:' : self.first_name, 'last_name': self.last_name, 'phone_number:' : self.phone_number}
 
 
-
+mongo_instance = MongoDB()
 
 class CrudContact:
 
     @staticmethod
     def search_contact_by_id(id : str):
-        collection = get_collection()
         try:
+            collection = mongo_instance.get_collection()
+            if isinstance(collection, Exception):
+                raise collection
             document = collection.find_one({'_id' : ObjectId(id)})
             return document
         except Exception as e:
@@ -30,8 +32,8 @@ class CrudContact:
 
     @staticmethod
     def search_phone(phone_number : str):
-        collection = get_collection()
         try:
+            collection = mongo_instance.get_collection()
             document = collection.find_one({'phone_number' : phone_number})
             return document is not None
         except Exception as e:
@@ -40,8 +42,8 @@ class CrudContact:
 
     @staticmethod
     def get_all_contacts():
-        collection = get_collection()
         try:
+            collection = mongo_instance.get_collection()
             documents = collection.find()
             if documents:
                 documents_list = [doc for doc in documents]
@@ -56,7 +58,7 @@ class CrudContact:
     def create_new_contact(contact_data: dict):
 
         try:
-            collection = get_collection()
+            collection = mongo_instance.get_collection()
             phone_exists = CrudContact.search_phone(contact_data['phone_number'])
             if phone_exists:
                 raise ValueError(f'contact with phone number {contact_data["phone_number"]} already exists')
@@ -73,7 +75,7 @@ class CrudContact:
     def update_contact(id : str, contact_data : dict):
     
         try:
-            collection = get_collection()
+            collection = mongo_instance.get_collection()
 
             phone_exists = CrudContact.search_phone(contact_data['phone_number'])
             
@@ -92,7 +94,7 @@ class CrudContact:
 
     @staticmethod
     def delete_contact(id : str):
-        collection = get_collection()
+        collection = mongo_instance.get_collection()
         try:
             if CrudContact.search_contact_by_id(id):
                 collection.delete_one({'_id' : ObjectId(id)})

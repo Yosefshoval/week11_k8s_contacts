@@ -30,6 +30,7 @@ minikube start
 ```
 kubectl apply -f .
 ```
+**You can also run each item separately, by specifing the file name insted of the ```.```.
 
 3: **Expose the API service (so that you can get the API in your browser):**
 ```
@@ -40,7 +41,52 @@ minikube service api-service
 minikube service api-service --url
 ```
 
-Then go to your brouser and open the ip indicated in the output. Try the endpoints!!
+Then go to your browser and open the ip indicated in the output. Try the endpoints!!
 
 
 
+---
+**Inaddition, you can use the API with ```curl``` command:**
+
+- Home Endpoint: 
+```
+curl -X 'GET' \
+  'http://127.0.0.1:63932/' \
+  -H 'accept: application/json'
+```
+- Get All Contacts:
+```
+curl -X 'GET' \
+  'http://127.0.0.1:63932/contacts' \
+  -H 'accept: application/json'
+```
+- Create New Contact:
+```
+curl -X 'POST' \
+  'http://127.0.0.1:<service port>/contacts' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "first_name": "string",
+  "last_name": "string",
+  "phone_number": "string"
+}'
+```
+- Update Contact:
+```
+curl -X 'PUT' \
+  'http://127.0.0.1:<service port>/contacts/?id=string' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "first_name": "string",
+  "last_name": "string",
+  "phone_number": "string"
+}'
+```
+- Delete Contact:
+```
+curl -X 'DELETE' \
+  'http://127.0.0.1:<service port>/contacts/{id}?c_id=d' \
+  -H 'accept: application/json'
+```
